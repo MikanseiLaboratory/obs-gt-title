@@ -44,8 +44,8 @@ Name: "ja"; MessagesFile: "compiler:Languages\Japanese.isl"
 Source: "{#DllSource}"; DestDir: "{code:ObsPluginDir}"; DestName: "obs_gt_title.dll"; Flags: ignoreversion
 
 [Messages]
-en.FinishedLabel=GT Title was copied into the OBS 64-bit plugin folder.%nRestart OBS, then add a GT Title source.
-ja.FinishedLabel=GT Title を OBS の 64bit プラグインフォルダへコピーしました。%nOBS を再起動すると、ソース一覧に GT Title が出ます。
+en.FinishedLabel=GT Title has been installed to the OBS Studio 64-bit plugin directory.%n%nPlease restart OBS Studio and add "GT Title" from the Sources list.
+ja.FinishedLabel=GT Title を OBS Studio の 64bit プラグインフォルダにインストールしました。%n%nOBS Studio を再起動後、ソース一覧から「GT Title」を追加してください。
 
 [Code]
 function ObsPluginDir(Param: string): string;

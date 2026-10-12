@@ -217,10 +217,10 @@ impl GetPropertiesSource for GtTitleSource {
         let mut properties = Properties::new();
         properties.add(
             obs_string!("file"),
-            obs_string!("GTファイル"),
+            obs_string!("GT Title ファイル"),
             PathProp::new(PathType::File).with_filter(obs_string!("GT Title (*.gtzip *.gtxml)")),
         );
-        properties.add(obs_string!("reload"), obs_string!("再読込"), BoolProp);
+        properties.add(obs_string!("reload"), obs_string!("再読み込み"), BoolProp);
         let boards_and_fields = {
             let state = lock(&self.state);
             state.session.as_ref().map(|session| {
@@ -258,19 +258,19 @@ impl GetPropertiesSource for GtTitleSource {
                 };
                 properties.add(
                     obs_text(&setting_key("text", &field.key)),
-                    obs_text(&format!("テキスト: {name}")),
+                    obs_text(&format!("{name} (テキスト)")),
                     TextProp::new(TextType::Multiline),
                 );
                 properties.add(
                     obs_text(&setting_key("font", &field.key)),
-                    obs_text(&format!("フォント: {name}")),
+                    obs_text(&format!("{name} (フォント)")),
                     FontProp,
                 );
             }
         }
         properties.add(
             obs_string!("play_out"),
-            obs_string!("TransitionOutを再生"),
+            obs_string!("TransitionOut を再生"),
             BoolProp,
         );
         properties
@@ -515,7 +515,7 @@ impl Module for GtTitleModule {
     }
 
     fn description() -> ObsString {
-        obs_string!("vMix GTタイトルをネイティブ描画します")
+        obs_string!("vMix GT Title ネイティブ描画プラグイン")
     }
 
     fn name() -> ObsString {

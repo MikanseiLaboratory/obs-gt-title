@@ -2,32 +2,34 @@
 
 ```
 obs-gt-title/
-├── Cargo.toml                 ワークスペース
-├── Cargo.lock
-├── rust-toolchain.toml        Rust 1.98.0
-├── technologystack.md
-├── directorystructure.md
-├── LICENSE                    GPL-2.0
-├── README.md
+├── Cargo.toml                 ワークスペース設定
+├── Cargo.lock                 依存関係ロックファイル
+├── rust-toolchain.toml        Rust ツールチェーン固定 (1.98.0)
+├── technologystack.md         技術スタックおよび依存ライブラリ一覧
+├── directorystructure.md      リポジトリ構造解説
+├── LICENSE                    GPL-2.0 ライセンス全文
+├── README.md                  プロジェクト説明書および利用ガイド
 ├── .github/workflows/
-│   ├── ci.yml                 push / pull request の fmt、clippy、test、3 OS ビルド
-│   └── release.yml            vX.Y.Z タグで GitHub Release と Windows インストーラー
+│   ├── ci.yml                 CI ワークフロー（fmt, clippy, test, 3 OS ビルド）
+│   └── release.yml            リリースワークフロー（vX.Y.Z タグ時の 3 OS ビルドとインストーラー作成）
 ├── installer/
-│   └── obs-gt-title.iss       Inno Setup 6
+│   └── obs-gt-title.iss       Inno Setup 6 インストーラー定義
 ├── scripts/
-│   ├── install.ps1            Windows の OBS プラグインディレクトリへコピー
-│   ├── install.sh             Linux / macOS
-│   ├── package.ps1            dist/ に Windows 用バイナリを集める
-│   ├── package.sh             Linux / macOS
-│   └── installer.ps1          Inno Setup でセットアップ exe を作る
+│   ├── install.ps1            Windows 向け OBS プラグイン配置スクリプト
+│   ├── install.sh             Linux / macOS 向け OBS プラグイン配置スクリプト
+│   ├── package.ps1            Windows 向け配布パッケージ作成スクリプト
+│   ├── package.sh             Linux / macOS 向け配布パッケージ作成スクリプト
+│   └── installer.ps1          Windows 用 Inno Setup インストーラー作成スクリプト
 ├── fixtures/
-│   ├── fonts/                 テスト用 Roboto（Apache-2.0）
-│   ├── synthetic/             再配布できる合成 GTXML
-│   └── golden/                時刻を固定した RGBA の PNG
+│   ├── fonts/                 テスト用フォント (Roboto, Apache-2.0)
+│   ├── synthetic/             合成テスト用 GTXML フィクスチャ
+│   └── golden/                レンダリング検証用ゴールデン画像 (PNG)
 └── crates/
-    ├── gt-native-renderer/    OBS に依存しないシーングラフ、フォント、ラスタ、再生
-    │   └── tests/title.rs
-    └── obs-gt-title/          cdylib。入力ソース、プロパティ、GPU 合成
+    ├── gt-native-renderer/    OBS 非依存の描画コア（シーングラフ、フォント解決、CPU ラスタライズ、再生制御）
+    │   └── tests/title.rs     統合テスト群
+    └── obs-gt-title/          OBS Studio プラグイン本体（cdylib: ソース登録、プロパティ UI、GPU テクスチャ合成）
 ```
 
-`gt-native-renderer` が GT IR をシーンにし、文字と図形を RGBA にする。`obs-gt-title` はその結果をテクスチャとして OBS に渡す。ファイル読込は描画スレッドの外で行う。
+### アーキテクチャの責務分離
+- **`gt-native-renderer`**: GT の中間表現（IR）からシーングラフを構築し、文字や図形を CPU 上で RGBA ラスタライズします。OBS 固有の API に一切依存しないため、単体テストやゴールデン画像検証が容易です。
+- **`obs-gt-title`**: OBS Studio の入力ソースとして登録され、ユーザープロパティ UI の提供、ワーカースレッドによる非同期ファイル読み込み、ラスタライズ結果の GPU テクスチャ合成を行います。

@@ -126,10 +126,16 @@ jobs:
           gh release create "$TAG" "${files[@]}" \
             --title "$TAG" \
             --notes "$(cat <<EOF
-          Windows は Inno Setup のインストーラーです。OBS Studio の 64bit プラグインフォルダへ obs_gt_title.dll をコピーします。導入後に OBS を再起動すると、ソース一覧に GT Title が出ます。
+          ## GT Title for OBS Studio ${VERSION}
 
-          Linux の libobs_gt_title.so は ~/.config/obs-studio/plugins/obs-gt-title/bin/64bit/ へ、macOS の libobs_gt_title.dylib は ~/Library/Application Support/obs-studio/plugins/obs-gt-title/bin/64bit/ へ置いてください。
+          vMix GT Title (\`.gtzip\` / \`.gtxml\`) を OBS Studio で直接描画するネイティブプラグインです。
 
-          バージョン: ${VERSION}
+          ### インストール手順
+
+          - **Windows**: \`obs-gt-title-${VERSION}-windows-setup.exe\` を実行してください（OBS Studio の 64bit プラグインフォルダへ自動配置されます）。
+          - **Linux**: \`libobs_gt_title.so\` を \`~/.config/obs-studio/plugins/obs-gt-title/bin/64bit/\` に配置してください。
+          - **macOS**: \`libobs_gt_title.dylib\` を \`~/Library/Application Support/obs-studio/plugins/obs-gt-title/bin/64bit/\` に配置してください。
+
+          インストール後、OBS Studio を再起動してソース一覧から「GT Title」を追加してください。
           EOF
           )"
