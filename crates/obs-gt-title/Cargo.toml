@@ -1,0 +1,17 @@
+[package]
+name = "obs-gt-title"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "OBS Studio source that renders vMix GT titles natively"
+
+[lib]
+name = "obs_gt_title"
+crate-type = ["cdylib"]
+
+[dependencies]
+gt-native-renderer = { path = "../gt-native-renderer" }
+log.workspace = true
+obs-wrapper.workspace = true

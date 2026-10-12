@@ -1,0 +1,34 @@
+<Composition Width="400" Height="200">
+  <Layer Name="Layer 1" Dimensions="400,200,0">
+    <Layer.Composition>
+      <Composition Width="400" Height="200">
+        <Rectangle Name="Rect In" Dimensions="80,40,0" Location="10,20,0">
+          <Rectangle.Fill>
+            <Brush Color="#FF00FF00"/>
+          </Rectangle.Fill>
+        </Rectangle>
+        <TextBlock Name="Fade Me" Dimensions="120,40,0" Location="100,20,0" Text="IN" FontFamily="Roboto" FontSize="18">
+          <TextBlock.Fill>
+            <Brush Color="#FFFFFFFF"/>
+          </TextBlock.Fill>
+        </TextBlock>
+      </Composition>
+    </Layer.Composition>
+  </Layer>
+  <Storyboard Type="TransitionIn">
+    <Storyboard.Animations>
+      <Reveal Object="Rect In" Duration="2" Delay="0" Interpolation="Linear" Direction="Left"/>
+      <Fade Object="Fade Me" Duration="0.5" Delay="0.2" Interpolation="CubicEasingInOut"/>
+    </Storyboard.Animations>
+  </Storyboard>
+  <Storyboard Type="TransitionOut">
+    <Storyboard.Animations>
+      <Fly Object="Layer 1" Duration="0.5" Interpolation="CubicEasingOut" Direction="Bottom"/>
+    </Storyboard.Animations>
+  </Storyboard>
+  <Storyboard Type="Continuous">
+    <Storyboard.Animations>
+      <Spin Object="Rect In" Duration="1" Interpolation="Linear"/>
+    </Storyboard.Animations>
+  </Storyboard>
+</Composition>

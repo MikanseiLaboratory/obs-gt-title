@@ -1,0 +1,18 @@
+<Composition Width="220" Height="80">
+  <Layer Name="Layer 1" Dimensions="220,80,0">
+    <Layer.Composition>
+      <Composition Width="220" Height="80">
+        <Rectangle Name="Plate" Dimensions="200,60,0" Location="10,10,0">
+          <Rectangle.Fill>
+            <Brush Color="#FFCC2200"/>
+          </Rectangle.Fill>
+        </Rectangle>
+        <TextBlock Name="Title" Dimensions="180,40,0" Location="20,20,0" Text="GT" FontFamily="Roboto" FontSize="28" TextAlign="Left" VerticalAlign="Center">
+          <TextBlock.Fill>
+            <Brush Color="#FFFFFFFF"/>
+          </TextBlock.Fill>
+        </TextBlock>
+      </Composition>
+    </Layer.Composition>
+  </Layer>
+</Composition>

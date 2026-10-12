@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy -p gt-native-renderer --all-targets -- -D warnings
+      - run: cargo test -p gt-native-renderer
+
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: |
+          sudo add-apt-repository ppa:obsproject/obs-studio
+          sudo apt-get update
+          sudo apt-get install -y obs-studio libxcb-randr0-dev libxcb-ewmh-dev libclang-dev
+      - run: cargo test -p gt-native-renderer
+      - run: cargo clippy -p obs-gt-title --no-deps -- -D warnings
+      - run: cargo build -p obs-gt-title --release
+      - run: sh scripts/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-gt-title-linux
+          path: dist/obs-gt-title-linux
+
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: choco install obs-studio llvm innosetup -y
+      - run: cargo test -p gt-native-renderer
+      - run: cargo clippy -p obs-gt-title --no-deps -- -D warnings
+      - run: cargo build -p obs-gt-title --release
+      - run: powershell -File scripts/package.ps1
+      - run: powershell -File scripts/installer.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-gt-title-windows
+          path: dist/obs-gt-title-windows
+
+  build_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: brew install --cask obs
+      - run: cargo test -p gt-native-renderer
+        env:
+          DYLD_FALLBACK_FRAMEWORK_PATH: /Applications/OBS.app/Contents/Frameworks
+          DYLD_FALLBACK_LIBRARY_PATH: /Applications/OBS.app/Contents/Frameworks
+      - run: cargo clippy -p obs-gt-title --no-deps -- -D warnings
+        env:
+          DYLD_FALLBACK_FRAMEWORK_PATH: /Applications/OBS.app/Contents/Frameworks
+          DYLD_FALLBACK_LIBRARY_PATH: /Applications/OBS.app/Contents/Frameworks
+      - run: cargo build -p obs-gt-title --release
+        env:
+          DYLD_FALLBACK_FRAMEWORK_PATH: /Applications/OBS.app/Contents/Frameworks
+          DYLD_FALLBACK_LIBRARY_PATH: /Applications/OBS.app/Contents/Frameworks
+      - run: sh scripts/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-gt-title-macos
+          path: dist/obs-gt-title-macos
