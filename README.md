@@ -7,10 +7,25 @@ Windows、macOS、Linux の各プラットフォームに対応しています�
 
 ---
 
+## ダウンロード
+
+最新バージョンのインストーラーおよび各 OS 向けバイナリは、以下のリンクからダウンロードできます。
+
+- **[最新リリースをダウンロード (GitHub Releases)](https://github.com/MikanseiLaboratory/obs-gt-title/releases/latest)**
+- **[リリース一覧 (全バージョン)](https://github.com/MikanseiLaboratory/obs-gt-title/releases)**
+
+| プラットフォーム | ダウンロード対象ファイル | 形式 |
+| --- | --- | --- |
+| Windows | `obs-gt-title-<version>-windows-setup.exe` | 自動セットアップインストーラー |
+| Linux | `libobs_gt_title.so` | 共有ライブラリ |
+| macOS | `libobs_gt_title.dylib` | 共有ライブラリ |
+
+---
+
 ## インストール手順
 
 ### リリースバイナリを利用する場合
-[Releases](https://github.com/MikanseiLaboratory/obs-gt-title/releases) より、ご利用の OS に合わせた最新版をダウンロードしてください。
+上記の [ダウンロード](#ダウンロード) より、ご利用の OS に合わせた最新版を取得してください。
 
 - **Windows**: `obs-gt-title-<version>-windows-setup.exe` を実行してインストールします（OBS Studio の 64bit プラグインフォルダへ自動配置されます）。
 - **Linux**: `libobs_gt_title.so` を `~/.config/obs-studio/plugins/obs-gt-title/bin/64bit/` に配置します。
