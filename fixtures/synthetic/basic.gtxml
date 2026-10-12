@@ -1,0 +1,36 @@
+<Composition Width="1920" Height="1080">
+  <Layer Name="Layer 1" Dimensions="1920,1080,0" Locked="False">
+    <Layer.Composition>
+      <Composition Width="1920" Height="1080">
+        <Rectangle Name="Rect 1" Dimensions="1000,100,0" Location="0,800,0">
+          <Rectangle.Bounding>
+            <Bounding Object="Text 1" Padding="15,15,15,15"/>
+          </Rectangle.Bounding>
+          <Rectangle.Fill>
+            <Brush Color="#FFFF0000"/>
+          </Rectangle.Fill>
+        </Rectangle>
+        <TextBlock Name="Text 1" Dimensions="400,80,0" Location="60,800,0" Text="HERE WE ARE" FontFamily="Roboto" FontSize="48" FontWeight="Bold" TextAlign="Left" VerticalAlign="Center" WordWrapping="NoWrap" AutoSize="Grow">
+          <TextBlock.Fill>
+            <Brush Color="#FFFFFFFF"/>
+          </TextBlock.Fill>
+        </TextBlock>
+      </Composition>
+    </Layer.Composition>
+  </Layer>
+  <Storyboard Type="TransitionIn">
+    <Storyboard.Animations>
+      <Reveal Object="Rect 1" Duration="1" Delay="0" Interpolation="Linear" Direction="Left"/>
+    </Storyboard.Animations>
+  </Storyboard>
+  <Storyboard Type="DataChangeOut">
+    <Storyboard.Animations>
+      <Fade Object="Text 1" Duration="0.2" Interpolation="Linear"/>
+    </Storyboard.Animations>
+  </Storyboard>
+  <Storyboard Type="DataChangeIn">
+    <Storyboard.Animations>
+      <Fade Object="Text 1" Duration="0.2" Interpolation="Linear"/>
+    </Storyboard.Animations>
+  </Storyboard>
+</Composition>

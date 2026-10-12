@@ -1,0 +1,21 @@
+[workspace]
+resolver = "3"
+members = ["crates/gt-native-renderer", "crates/obs-gt-title"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+license = "GPL-2.0-only"
+repository = "https://github.com/MikanseiLaboratory/obs-gt-title"
+
+[workspace.dependencies]
+cosmic-text = "0.19.0"
+gt-core = { git = "https://github.com/MikanseiLaboratory/gt-parser", rev = "a8ace88680f628a8f2f38d428dabc14f4607a438" }
+image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "gif", "bmp", "webp"] }
+log = "0.4.28"
+obs-wrapper = { git = "https://github.com/MikanseiLaboratory/rust-obs-plugins", rev = "920faa6da3224485f3891f6655bd9e1ba437f1f7" }
+thiserror = "2.0.21"
+tiny-skia = "0.12.0"
+tokio = { version = "1.53.1", features = ["fs", "io-util", "macros", "rt", "sync"] }
+zip = "8.6.0"

@@ -1,0 +1,19 @@
+[package]
+name = "gt-native-renderer"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Native scene graph, font resolution, and CPU rasterizer for GT titles"
+
+[dependencies]
+cosmic-text.workspace = true
+gt-core.workspace = true
+image.workspace = true
+thiserror.workspace = true
+tiny-skia.workspace = true
+tokio.workspace = true
+
+[dev-dependencies]
+zip.workspace = true

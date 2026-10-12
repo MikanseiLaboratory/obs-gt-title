@@ -1,0 +1,141 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.version.outputs.publish }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "version=" >> "$GITHUB_OUTPUT"
+            echo "Tag ${GITHUB_REF_NAME} is not vX.Y.Z. No release will be published."
+          fi
+
+  build_windows:
+    needs: gate
+    if: needs.gate.outputs.publish == 'true'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: choco install obs-studio llvm innosetup -y
+      - run: cargo test -p gt-native-renderer
+      - run: cargo clippy -p obs-gt-title --no-deps -- -D warnings
+      - run: cargo build -p obs-gt-title --release
+      - run: powershell -File scripts/package.ps1
+      - run: powershell -File scripts/installer.ps1
+        env:
+          GT_TITLE_VERSION: ${{ needs.gate.outputs.version }}
+      - run: |
+          New-Item -ItemType Directory -Force -Path release | Out-Null
+          Copy-Item dist\obs-gt-title-windows\*-windows-setup.exe release\
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: release/*.exe
+
+  build_linux:
+    needs: gate
+    if: needs.gate.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.98.0
+      - uses: Swatinem/rust-cache@v2
+      - run: |
+          sudo add-apt-repository ppa:obsproject/obs-studio
+          sudo apt-get update
+          sudo apt-get install -y obs-studio libxcb-randr0-dev libxcb-ewmh-dev libclang-dev
+      - run: cargo test -p gt-native-renderer
+      - run: cargo build -p obs-gt-title --release
+      - run: sh scripts/package.sh
+      - run: |
+          mkdir -p release
+          cp dist/obs-gt-title-linux/libobs_gt_title.so release/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: release/libobs_gt_title.so
+
+  build_macos:
+    needs: gate
+    if: needs.gate.outputs.publish == 'true'
+    runs-on: macos-latest
+    env:
+      DYLD_FALLBACK_FRAMEWORK_PATH: /Applications/OBS.app/Contents/Frameworks
+      DYLD_FALLBACK_LIBRARY_PATH: /Applications/OBS.app/Contents/Frameworks
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.98.0
+      - uses: Swatinem/rust-cache@v2
+      - run: brew install --cask obs
+      - run: cargo test -p gt-native-renderer
+      - run: cargo build -p obs-gt-title --release
+      - run: sh scripts/package.sh
+      - run: |
+          mkdir -p release
+          cp dist/obs-gt-title-macos/libobs_gt_title.dylib release/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-macos
+          path: release/libobs_gt_title.dylib
+
+  publish:
+    needs: [gate, build_windows, build_linux, build_macos]
+    if: needs.gate.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.gate.outputs.version }}
+        run: |
+          set -eu
+          mapfile -t files < <(find dist -type f | sort)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No release files were downloaded." >&2
+            exit 1
+          fi
+          printf 'Release file: %s\n' "${files[@]}"
+          gh release create "$TAG" "${files[@]}" \
+            --title "$TAG" \
+            --notes "$(cat <<EOF
+          ## GT Title for OBS Studio ${VERSION}
+
+          vMix GT Title (\`.gtzip\` / \`.gtxml\`) を OBS Studio で直接描画するネイティブプラグインです。
+
+          ### インストール手順
+
+          - **Windows**: \`obs-gt-title-${VERSION}-windows-setup.exe\` を実行してください（OBS Studio の 64bit プラグインフォルダへ自動配置されます）。
+          - **Linux**: \`libobs_gt_title.so\` を \`~/.config/obs-studio/plugins/obs-gt-title/bin/64bit/\` に配置してください。
+          - **macOS**: \`libobs_gt_title.dylib\` を \`~/Library/Application Support/obs-studio/plugins/obs-gt-title/bin/64bit/\` に配置してください。
+
+          インストール後、OBS Studio を再起動してソース一覧から「GT Title」を追加してください。
+          EOF
+          )"
