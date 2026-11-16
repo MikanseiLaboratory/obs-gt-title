@@ -140,3 +140,12 @@ jobs:
           インストール後、OBS Studio を再起動してソース一覧から「GT Title」を追加してください。
           EOF
           )"
+
+  announce-discord:
+    name: Announce release on Discord
+    needs: [publish]
+    uses: ./.github/workflows/discord-notify.yml
+    with:
+      tag: "${{ github.event.inputs.tag || github.ref_name }}"
+    secrets:
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
